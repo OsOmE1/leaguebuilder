@@ -1,0 +1,55 @@
+﻿patch: latest
+locale: en_us
+key_replacements:
+  "{15dd1b3843}": Spell_GangplankQWrapper_Tooltip_1
+  "{13cc673c9b}": Spell_AkshanW_Tooltip_1
+  "{2497454aec}": Spell_OrnnP_Tooltip_1
+  "{4998f9a12d}": Spell_SecondSight_Tooltip_1
+key_links:
+  # _1 is for kayne _2 for rhaast
+  game_spell_kayn_q_main_1: game_spell_Kayn_Q_main_@f1@
+  game_spell_kayn_e_main_1: game_spell_Kayn_E_main_@f1@
+  game_spell_kayn_w_maintext_1: game_spell_Kayn_W_maintext_@f1@
+  game_spell_kayn_r_main_1: spell_Kayn_R_main_@f1@
+  game_spell_kayn_p_main_1: game_spell_Kayn_P_main_@f1@
+  # guns 1-5
+  apheliosgun_lorename_1: ApheliosGun_LoreName_@f1@
+  spell_apheliosr_weaponmod_1: Spell_ApheliosR_WeaponMod_@f1@
+  spell_apheliosp_gunshortdesc_1: Spell_ApheliosP_GunShortDesc_@f1@
+  spell_apheliosp_gunshortdesc_2: Spell_ApheliosP_GunShortDesc_@f2@
+  spell_apheliosp_gunshortdesc_3: Spell_ApheliosP_GunShortDesc_@f3@
+  spell_apheliosp_gunshortdesc_4: Spell_ApheliosP_GunShortDesc_@f4@
+  spell_apheliosp_gunshortdesc_5: Spell_ApheliosP_GunShortDesc_@f5@
+  # 0 for unevolved 1 for evolved
+  spell_syndraw_damage0: Spell_SyndraW_Damage@f3@
+  # replace stack names for various champions
+  stat_stone_description_kindredmarkscollected: "{64290302}"
+  stat_stone_description_aurelionsolpstacks: "{c9372c6b}"
+  stat_stone_description_belvethpstacks: "{1b1d7345}"
+  stat_stone_description_sennapmiststacks: "{e88568f8}"
+  generatedtip_passive_nasuspassive_tooltipsimple: "{7f3c01cf}"
+  stat_stone_description_threshpcollected: "{5fbfbf13}"
+spell_replacements:
+  XayahPassive:
+    f14: "@Effect6Amount@"
+    f16: "@Effect8Amount*100@"
+    f12: "@Effect5Amount@"
+  # hardcoded these values because i could not find them anywhere else
+  AurelionSolPassive:
+    f2.1: (62.5% Stardust)
+    f3.1: (15% Stardust)
+    f4.1: (15% Stardust)
+  KaisaQ:
+    f11.1: "@BonusAttack@"
+  KaisaW:
+    f2.1: "@AbilityPower@"
+  KaisaE:
+    f10.1: "@BonusAttackSpeed@"
+  KaisaPassive:
+    f1.1: "@BonusAttack@"
+    f2.1: "@AbilityPower@"
+    f3.1: "@BonusAttackSpeed@"
+  BelvethE:
+    f2.0: "@TotalAttackSpeed@"
+  SyndraW:
+    f2: "@SlowDuration@"
