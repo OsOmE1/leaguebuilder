@@ -57,6 +57,20 @@ public class ChampionInstance
 
     }
 
+    public double GetResourceAmount(StatFormulaType type)
+    {
+        double baseValue = Champ.BaseAbilityResource;
+        double bonusValue = Items.Sum(it => it.GetResourceFlat());
+
+        return type switch
+        {
+            StatFormulaType.Base => baseValue,
+            StatFormulaType.Bonus => bonusValue,
+            StatFormulaType.Total => baseValue + bonusValue,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+        };
+    }
+
     public double? GetStat(string statString)
     {
         statString = statString.ToLower().Replace(" ", "");

@@ -11,6 +11,8 @@ public class Champion
     public List<string> Tags;
 
     public AbilityResourceType AbilityResource;
+    public double BaseAbilityResource;
+
     public Stats BaseStats;
     public Dictionary<StatType, double> PerLevel;
     public List<Spell> Spells;
@@ -22,6 +24,8 @@ public class Champion
         Resolver = stringResolver;
         Name = champion.Character.Name;
         AbilityResource = (AbilityResourceType)champion.Character.PrimaryAbilityResource.ArType;
+        BaseAbilityResource = champion.Character.PrimaryAbilityResource.ArBase;
+
         BaseStats = new Stats(champion.Character);
         PerLevel = new Dictionary<StatType, double>
         {

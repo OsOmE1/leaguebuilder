@@ -6,7 +6,7 @@ namespace LeagueBuilder.Calc.Parts;
 
 public class SubPartScaledProportionalToStat : IGameCalculationPart
 {
-    private IGameCalculationPart Part;
+    private IGameCalculationPart? Part;
     private StatType Stat;
     private StatFormulaType StatFormula;
     private double Ratio;

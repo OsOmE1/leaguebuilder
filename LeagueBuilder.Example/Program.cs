@@ -9,9 +9,9 @@ var runaans = data.GetItem(3085);
 var ie = data.GetItem(3031);
 
 var champion = data.GetChampion("Twitch");
-var instance = champion.GetInstance(6);
+var instance = champion.GetInstance(1);
 
 instance.Items.AddRange([bork, runaans, ie]);
 var spell = champion.GetSpell(SpellSlot.E);
 
-Console.WriteLine(spell.ResolveSpellText(instance, 1, SpellResolveMode.Symbolic));
+Console.WriteLine(spell.ResolveSpellText(instance, 1, SpellResolveMode.Numerical));

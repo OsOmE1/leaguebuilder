@@ -26,7 +26,7 @@ public class StatBySubPartCalculationPart  : IGameCalculationPart
         if (element.TryGetProperty("mStatFormula", out JsonElement form))
             StatFormula = (StatFormulaType)form.GetInt32();
         if (element.TryGetProperty("mSubpart", out JsonElement part))
-            Part = GameCalculationPart.PartFromJson(part, context);
+            Part = GameCalculationPart.PartFromJson(part, context)!;
     }
 
     public CalculationPartType Type() => CalculationPartType.StatBySubPartCalculationPart;

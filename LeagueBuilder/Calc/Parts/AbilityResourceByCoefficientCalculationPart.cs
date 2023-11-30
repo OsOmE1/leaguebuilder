@@ -11,11 +11,11 @@ public class AbilityResourceByCoefficientCalculationPart : IGameCalculationPart
 
     public double GetValue(CalculationContext context)
     {
-        throw new NotImplementedException("ability resource values not implemented");
+        return Coefficient * context.Champion.GetResourceAmount(StatFormula);
         // ctx.Champion.GetAbilityResourceValue(p.AbilityResource, p.StatFormula)
     }
 
-    public string String(CalculationContext context) => $"{Math.Round(Coefficient * 100)}% {AbilityResource}";
+    public string String(CalculationContext context) => $"{Math.Round(Coefficient * 100)}% {StatFormula}{AbilityResource}";
 
     public void FromJson(JsonElement element, ParseContext context)
     {

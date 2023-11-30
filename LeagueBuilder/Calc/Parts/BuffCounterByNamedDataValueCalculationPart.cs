@@ -28,7 +28,7 @@ public class BuffCounterByNamedDataValueCalculationPart : IGameCalculationPart
             BuffName = buff.GetString()!;
         if (!element.TryGetProperty("mDataValue", out JsonElement dv)) return;
         DataValue = context.FindDataValue(dv.GetString()!);
-        if (DataValue == null) throw new Exception("bruh");
+        if (DataValue == null) throw new Exception("Could not find DataValue");
     }
 
     public CalculationPartType Type() => CalculationPartType.BuffCounterByNamedDataValueCalculationPart;

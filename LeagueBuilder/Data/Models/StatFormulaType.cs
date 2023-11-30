@@ -3,8 +3,8 @@
 public enum StatFormulaType : int
 {
     Base,
-    Bonus,
     Total,
+    Bonus,
     Unknown3,
     Unknown4,
 }

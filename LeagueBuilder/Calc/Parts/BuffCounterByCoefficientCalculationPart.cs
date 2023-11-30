@@ -11,7 +11,7 @@ public class BuffCounterByCoefficientCalculationPart  : IGameCalculationPart
     public double GetValue(CalculationContext context)
     {
         double val = Coefficient;
-        if (val > 0 && val < 0.01) val *= 100;
+        if (val is > 0 and < 0.01) val *= 100;
         return val;
     }
 
