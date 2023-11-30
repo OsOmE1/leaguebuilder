@@ -12,7 +12,9 @@ public class ProductOfSubPartsCalculationPart : IGameCalculationPart
     public double GetValue(CalculationContext context)
     {
         if (Part1 == null && Part2 == null) return 0;
-        return Part1?.GetValue(context) ?? 1 * Part2?.GetValue(context) ?? 1;
+        if (Part1 == null) return Part2!.GetValue(context);
+        if (Part2 == null) return Part1.GetValue(context);
+        return Part1.GetValue(context) * Part2.GetValue(context);
     }
 
     public string String(CalculationContext context) => $"({Part1?.String(context) ?? "1"}*{Part2?.String(context) ?? "1"})";

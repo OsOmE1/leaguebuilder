@@ -12,10 +12,7 @@ public class GameCalculation : IGameCalculation
     public int Precision;
     public IGameCalculationPart? Multiplier;
 
-    public string Name()
-    {
-        return _name;
-    }
+    public string Name() => _name;
 
     public double Value(CalculationContext context)
     {
@@ -26,9 +23,8 @@ public class GameCalculation : IGameCalculation
     public string String(CalculationContext context)
     {
         var parts = new List<string>();
-        foreach (var part in FormulaParts)
+        foreach (string val in FormulaParts.Select(part => part.String(context)))
         {
-            string val = part.String(context);
             if (!double.TryParse(val, out double v))
             {
                 parts.Add(val);
@@ -44,7 +40,9 @@ public class GameCalculation : IGameCalculation
             v *= 100;
             parts.Add($"{Math.Round(v)}%");
         }
-        return string.Join(" + ", parts);
+
+        string sum = string.Join(" + ", parts);
+        return Multiplier == null ? sum : $"({sum}) * {Multiplier.String(context)}";
     }
 
     public void FromJson(string name, JsonElement element, ParseContext context)
