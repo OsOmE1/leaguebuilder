@@ -24,7 +24,7 @@ public class GameCalculationModified : IGameCalculation
     public string String(CalculationContext context)
     {
         if (Multiplier == null) return "?";
-        return ModifiedGameCalculation.String(context) + " * " + Multiplier.String(context);
+        return ModifiedGameCalculation.String(context) + " * " + $"{Multiplier.GetValue(context)}";
     }
 
     public void FromJson(string name, JsonElement element, ParseContext context)

@@ -9,6 +9,7 @@ public class DataDragon
 {
     private const string Base = "https://raw.communitydragon.org/";
     private readonly StringResolver _sr;
+    private readonly List<Item> _items;
     private readonly string _url;
     private readonly HttpClient _client;
 
@@ -29,9 +30,18 @@ public class DataDragon
         foreach (var spell in config.SpellReplacements)
         foreach (var spellReplacement in spell.Value)
             _sr.AddSpellReplacement(spell.Key, spellReplacement.Key, spellReplacement.Value);
+
+        _items = new List<Item>();
+        res = Get<JsonDocument>($"game/items.cdtb.bin.json");
+        _items = res?.RootElement.EnumerateObject()
+            .Where(p => Regex.IsMatch(p.Name, @"^Items/\d+$"))
+            .Select(p => p.Value.Deserialize<ApiItem>())
+            .Where(i => i != null)
+            .Select(i => new Item(i!, _sr))
+            .ToList() ?? [];
     }
 
-    private T? Get<T>(string path)
+    public T? Get<T>(string path)
     {
         using var req = new HttpRequestMessage();
         req.Method = HttpMethod.Get;
@@ -54,6 +64,12 @@ public class DataDragon
             .Select(v => v.Value.GetProperty("name").GetString())
             .Where(s => s != null && s != "TFTChampion")!;
     }
+
+    public Item? GetItem(int id) => GetItem(i => i.Id == id);
+    public Item? GetItem(string name) => GetItem(i => i.Title == name || i.Name == name);
+    public Item? GetItem(Func<Item, bool> predicate) => _items.FirstOrDefault(predicate);
+    public IEnumerable<Item> GetItems(Func<Item, bool> predicate) => _items.Where(predicate);
+    public List<Item> GetItems() => _items;
 
     public Champion GetChampion(string name)
     {

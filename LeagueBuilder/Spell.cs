@@ -7,12 +7,29 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder;
 
+public enum SpellSlot
+{
+    Q,
+    E,
+    W,
+    R,
+    Passive,
+    Other
+}
+
+public enum SpellResolveMode
+{
+    Symbolic,
+    Numerical
+}
+
 public class Spell
 {
     public string Name;
     public string Title;
     public string Tooltip;
 
+    public SpellSlot Slot;
     public ApiSpell Raw;
     public List<DamageType> DamageTypes;
     public List<string> SpellTags;
@@ -33,13 +50,13 @@ public class Spell
     public List<string> PartialCC;
     public List<string> Replacements;
 
-    private Dictionary<string, DamageType> _dmgMap = new()
+    private static Dictionary<string, DamageType> _dmgMap = new()
     {
         {"physicalDamage", DamageType.Physical},
         {"magicDamage", DamageType.Magic},
         {"trueDamage", DamageType.True}
     };
-    private Dictionary<string, EffectType> _effMap = new()
+    private static Dictionary<string, EffectType> _effMap = new()
     {
         {"speed", EffectType.BonusMoveSpeedEffect},
         {"status", EffectType.CC},
@@ -53,11 +70,12 @@ public class Spell
         {"scaleMana", EffectType.Mana}
     };
 
-    private List<string> _hardCc = ["Knock", "Charm", "Fear", "Taunt", "Sleep", "Stun", "Suppress"];
-    private List<string> _softCc = ["Blind", "Cripple", "Disarm", "Drowsy", "Ground", "Pull", "Nearsight", "Polymorph", "Root", "Silence", "Slow"];
+    private static List<string> _hardCc = ["Knock", "Charm", "Fear", "Taunt", "Sleep", "Stun", "Suppress"];
+    private static List<string> _softCc = ["Blind", "Cripple", "Disarm", "Drowsy", "Ground", "Pull", "Nearsight", "Polymorph", "Root", "Silence", "Slow"];
 
-    public Spell(ApiSpell spell, StringResolver stringResolver)
+    public Spell(ApiSpell spell, SpellSlot slot, StringResolver stringResolver)
     {
+        Slot = slot;
         Raw = spell;
 
         Replacements = spell.MSpell.MClientData?.MTooltipData?.MLists?.LevelUp.Elements?
@@ -126,17 +144,17 @@ public class Spell
 
     private SpellInstance GetInstance(int rank) => new SpellInstance(this, rank);
 
-    public string ResolveSpellText(ChampionInstance champion, int rank) =>
-        ResolveSpellText(Tooltip, champion, rank);
+    public string ResolveSpellText(ChampionInstance champion, int rank, SpellResolveMode mode) =>
+        ResolveSpellText(Tooltip, champion, rank, mode);
 
-    private string? GetValue(string key, ChampionInstance champion, int rank)
+    private string? GetValue(string key, ChampionInstance champion, int rank, SpellResolveMode mode)
     {
         CalculationContext context = champion.GetCalculationContext(GetInstance(rank), champion.Champ.Resolver);
         foreach (IGameCalculation calculation in SpellCalculations)
         {
             if (!Utils.MatchesBinEntry(key, calculation.Name()))
                 continue;
-            return calculation.String(context);
+            return mode == SpellResolveMode.Symbolic ? calculation.String(context) : $"{Math.Round(calculation.Value(context))}";
         }
 
         foreach ((string name, DataValue value) in DataValues)
@@ -180,7 +198,7 @@ public class Spell
         return null;
     }
 
-    private string ResolveSpellText(string tooltip, ChampionInstance champion, int rank)
+    private string ResolveSpellText(string tooltip, ChampionInstance champion, int rank, SpellResolveMode mode)
     {
         string tt = CleanupToolTip(tooltip);
 
@@ -197,7 +215,7 @@ public class Spell
         {
             Spell? spell = champion.Champ.Spells.FirstOrDefault(s => s.Name == pointer.Groups[1].Value)
                            ?? champion.Champ.AltSpells.FirstOrDefault(s => s.Name == pointer.Groups[1].Value);
-            string? newValue = spell?.GetValue(pointer.Groups[2].Value, champion, rank);
+            string? newValue = spell?.GetValue(pointer.Groups[2].Value, champion, rank, mode);
             if (newValue == null) continue;
             if (pointer.Groups[3].Success && double.TryParse(pointer.Groups[3].Value, out double mult))
             {
@@ -274,7 +292,7 @@ public class Spell
         MatchCollection matches = Regex.Matches(tt, $@"@(.+?)(?:\*([-\.0-9]+)%*|\.\d|)@");
         foreach (Match match in matches)
         {
-            string? newValue = GetValue(match.Groups[1].Value, champion, rank);
+            string? newValue = GetValue(match.Groups[1].Value, champion, rank, mode);
             if (newValue == null) continue;
             if (match.Groups[2].Success)
             {
@@ -304,7 +322,7 @@ public class Spell
             tt = tt.Replace(reference.Value, val);
         }
 
-        return donTt != tt ? ResolveSpellText(tt, champion, rank) : tt;
+        return donTt != tt ? ResolveSpellText(tt, champion, rank, mode) : tt;
     }
 
     private static string CleanupToolTip(string tt)

@@ -8,7 +8,7 @@ public class ChampionInstance
     public Champion Champ;
     public Stats BaseStats;
     public Dictionary<StatType, double> PerLevel;
-    public List<object> Items;
+    public readonly List<Item> Items;
     public int Level;
     public List<object> Perks;
 
@@ -52,7 +52,7 @@ public class ChampionInstance
         PerLevel = champ.PerLevel;
         Level = level;
 
-        Items = new List<object>();
+        Items = new List<Item>();
         Perks = new List<object>();
 
     }
@@ -82,17 +82,29 @@ public class ChampionInstance
     public double GetStat(StatType stat, StatFormulaType type)
     {
         double baseValue = BaseStats.Values[stat];
-        if (PerLevel.TryGetValue(stat, out double perLevel)) baseValue += perLevel * Level;
 
         double bonusValue = 0;
-        foreach (object it in Items) continue; // TODO: implement items
-        foreach (object it in Items) continue; // TODO: implement runes
+        double bonusRatio = 0;
+        foreach (Item it in Items)
+        {
+            bonusValue += it.GetStatFlat(stat);
+            if (stat == StatType.ArmorPenetrationPercent || stat == StatType.MagicPenetrationFlat)
+                bonusRatio *= it.GetStatRatio(stat);
+            else bonusRatio += it.GetStatRatio(stat);
+        }
+        bonusValue += bonusRatio * baseValue; // Percent bonuses stack additively - credit: yariet :)
+
+        foreach (object p in Perks) continue; // TODO: implement runes
+
+        double growth = 0;
+        if (PerLevel.TryGetValue(stat, out double perLevel))
+            growth = perLevel * (Level-1) * (0.7025+0.0175 * (Level-1)); // credit: yariet for this weird formula
 
         return type switch
         {
-            StatFormulaType.Base => baseValue,
+            StatFormulaType.Base => baseValue + growth,
             StatFormulaType.Bonus => bonusValue,
-            StatFormulaType.Total => baseValue + bonusValue,
+            StatFormulaType.Total => baseValue + bonusValue + growth,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
     }

@@ -11,9 +11,9 @@ public class SubPartScaledProportionalToStat : IGameCalculationPart
     private StatFormulaType StatFormula;
     private double Ratio;
 
-    public double GetValue(CalculationContext context) => Part.GetValue(context) * (context.Champion.GetStat(Stat, StatFormula) * Ratio + 1);
+    public double GetValue(CalculationContext context) => Part.GetValue(context) * (context.Champion.GetStat(Stat, StatFormula) * (Ratio + 1));
 
-    public string String(CalculationContext context) => $"(1 + {Math.Round(Part.GetValue(context) * 100)} {StatFormula}{Stat}%)";
+    public string String(CalculationContext context) => $"({Math.Round(Part.GetValue(context) * 100)} {StatFormula}{Stat}% * {(Ratio+1)*100})";
 
     public void FromJson(JsonElement element, ParseContext context)
     {

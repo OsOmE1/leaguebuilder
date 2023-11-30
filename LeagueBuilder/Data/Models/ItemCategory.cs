@@ -1,0 +1,36 @@
+namespace LeagueBuilder.Data.Models;
+
+public enum ItemCategory
+{
+    Damage,
+    Consumable,
+    Health,
+    SpellDamage,
+    CooldownReduction,
+    SpellVamp,
+    MagicPenetration,
+    AbilityHaste,
+    HealthRegen,
+    Armor,
+    Aura,
+    Active,
+    OnHit,
+    SpellBlock,
+    NonbootsMovement,
+    Mana,
+    ManaRegen,
+    ArmorPenetration,
+    Slow,
+    MagicResist,
+    Jungle,
+    LifeSteal,
+    CriticalStrike,
+    Lane,
+    Boots,
+    AttackSpeed,
+    Vision,
+    Tenacity,
+    Trinket,
+    Stealth,
+    GoldPer
+}
