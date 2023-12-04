@@ -29,6 +29,8 @@ public class RawDataValue
     public string MName { get; set; }
     [JsonPropertyName("mValues")]
     public List<double> Values { get; set; }
+    [JsonPropertyName("mValue")]
+    public double Value { get; set; }
     [JsonPropertyName("mBaseP")]
     public double MBaseP { get; set; }
     [JsonPropertyName("mFormula")]

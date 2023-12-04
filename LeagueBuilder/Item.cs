@@ -9,19 +9,24 @@ public class Item
     public string Name;
     public string Title;
     public int Id;
+    public int Epicness;
 
     public List<ItemCategory> Categories;
     public List<ItemStat> ItemStats;
 
     public double AbilityHaste;
+    public double Lethality;
     public double FlatHp;
+    public double PercentHp;
     public double FlatAbilityPower;
+    public double PercentAbilityPower;
     public double PercentOmnivamp;
     public double PercentBaseHpRegen;
     public double FlatArmor;
     public double FlatMana;
     public double PercentMovementSpeed;
     public double FlatPhysicalDamage;
+    public double PercentPhysicalDamage;
     public double PercentHealingAmount;
     public double PercentBaseManaRegen;
     public double FlatMagicResist;
@@ -53,6 +58,7 @@ public class Item
         { StatType.CritChance, ItemStat.CritChance },
         { StatType.MagicPenetrationFlat, ItemStat.MagicPen },
         { StatType.MoveSpeed, ItemStat.MoveSpeed },
+        { StatType.ArmorPenetrationFlat, ItemStat.Lethality },
         { StatType.ArmorPenetrationPercent, ItemStat.ArmorPenPercent },
         { StatType.AttackSpeed, ItemStat.AttackSpeed },
         { StatType.LifeSteal, ItemStat.LifeSteal },
@@ -66,11 +72,21 @@ public class Item
         Raw = item;
         Name = item.mDisplayName;
         Id = item.itemID;
+        Epicness = item.epicness;
         Title = stringResolver.Get(item.mItemDataClient?.mTooltipData?.mLocKeys?.keyName ?? "") ?? "";
 
         Categories = item.mCategories?.Select(s => (ItemCategory)Enum.Parse(typeof(ItemCategory), s)).ToList() ?? [];
         ItemStats = item.mItemDataClient?.mTooltipData?.mLists?.Stats?.elements
             ?.Select(s => (ItemStat)Enum.Parse(typeof(ItemStat), s.type)).ToList() ?? [];
+
+        // BonusStatMod or deathcap
+        PercentAbilityPower = (item.mDataValues?.FirstOrDefault(r => r.MName == "APAmp")?.Value ??
+                               item.mDataValues?.FirstOrDefault(r => r.MName == "BonusStatMod")?.Value) ?? 0;
+
+        PercentPhysicalDamage = item.mDataValues?.FirstOrDefault(r => r.MName == "BonusStatMod")?.Value ?? 0;
+        PercentHp = item.mDataValues?.FirstOrDefault(r => r.MName == "BonusStatMod")?.Value ?? 0;
+
+        Lethality = item.mDataValues?.FirstOrDefault(r => r.MName == "LethalityAmount")?.Value ?? 0;
 
         AbilityHaste = item.mAbilityHasteMod;
         FlatHp = item.mFlatHPPoolMod;
@@ -114,7 +130,7 @@ public class Item
             ItemStat.BaseHealthRegen => FlatHpRegen,
             ItemStat.AttackDamage => FlatPhysicalDamage,
             ItemStat.MagicResist => FlatMagicResist,
-            ItemStat.Lethality => throw new NotImplementedException(), // TODO:
+            ItemStat.Lethality => Lethality,
             ItemStat.CritChance => FlatCritChance,
             ItemStat.MagicPen => FlatMagicPenetration,
             ItemStat.MoveSpeed => FlatMovementSpeed,
@@ -137,6 +153,7 @@ public class Item
             ItemStat.LifeSteal => PercentLifeSteal / 100,
             ItemStat.MagicPenPercent => PercentMagicPenetration,
             ItemStat.Tenacity => PercentTenacity / 100,
+            ItemStat.AbilityPower => PercentAbilityPower,
             _ => 0
         };
     }

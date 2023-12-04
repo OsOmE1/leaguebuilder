@@ -50,6 +50,10 @@ public abstract class GameCalculationPart
                 return CalculationPartType.Breakpoint;
             case "ByCharLevelFormulaCalculationPart":
                 return CalculationPartType.ByCharLevelFormulaCalculationPart;
+            case "{803dae4c}":
+                return CalculationPartType.ClampBySubpartCalculationPart;
+            case "{663d5e00}":
+                return CalculationPartType.ItemsByRarityWithCoefficient;
             default:
                 return CalculationPartType.UnknownPart;
         }
@@ -112,6 +116,12 @@ public abstract class GameCalculationPart
                 break;
             case CalculationPartType.CooldownMultiplierCalculationPart:
                 p = new CooldownMultiplierCalculationPart();
+                break;
+            case CalculationPartType.ClampBySubpartCalculationPart:
+                p = new ClampBySubpartCalculationPart();
+                break;
+            case CalculationPartType.ItemsByRarityWithCoefficient:
+                p = new ItemsByRarityWithCoefficient();
                 break;
         }
 

@@ -102,17 +102,23 @@ public class ChampionInstance
         foreach (Item it in Items)
         {
             bonusValue += it.GetStatFlat(stat);
-            if (stat == StatType.ArmorPenetrationPercent || stat == StatType.MagicPenetrationFlat)
+            if (stat is StatType.ArmorPenetrationPercent or StatType.MagicPenetrationPercent)
                 bonusRatio *= it.GetStatRatio(stat);
             else bonusRatio += it.GetStatRatio(stat);
         }
+        foreach (object p in Perks) continue; // TODO: implement runes
+
         bonusValue += bonusRatio * baseValue; // Percent bonuses stack additively - credit: yariet :)
 
-        foreach (object p in Perks) continue; // TODO: implement runes
+        if (stat is StatType.AbilityPower or StatType.MaxHealth or StatType.Attack)
+            bonusValue += bonusRatio * bonusValue; // deathcap or wardstone edgecase
 
         double growth = 0;
         if (PerLevel.TryGetValue(stat, out double perLevel))
             growth = perLevel * (Level-1) * (0.7025+0.0175 * (Level-1)); // credit: yariet for this weird formula
+
+        // stat formula does not matter for ap
+        if (stat == StatType.AbilityPower) return bonusValue;
 
         return type switch
         {

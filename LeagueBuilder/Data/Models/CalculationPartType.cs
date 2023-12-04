@@ -25,4 +25,6 @@ public enum CalculationPartType : int
     Breakpoint,
     ByCharLevelFormulaCalculationPart,
     CooldownMultiplierCalculationPart,
+    ClampBySubpartCalculationPart,
+    ItemsByRarityWithCoefficient
 }
