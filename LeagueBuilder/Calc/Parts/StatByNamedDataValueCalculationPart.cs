@@ -4,7 +4,7 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc.Parts;
 
-public class StatByNamedDataValueCalculationPart  : IGameCalculationPart
+public class StatByNamedDataValueCalculationPart  : IGameCalculationPart, IGameCalculationPartWithStats
 {
     private DataValue? DataValue;
     private StatType Stat;
@@ -30,6 +30,6 @@ public class StatByNamedDataValueCalculationPart  : IGameCalculationPart
         DataValue = context.FindDataValue(dv.GetString()!);
         if (DataValue == null) throw new Exception("Could not find DataValue");
     }
-
+    public (StatType, StatFormulaType) GetStat() => (Stat, StatFormula);
     public CalculationPartType Type() => CalculationPartType.StatByNamedDataValueCalculationPart;
 }

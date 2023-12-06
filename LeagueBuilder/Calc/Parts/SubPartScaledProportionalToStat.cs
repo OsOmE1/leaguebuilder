@@ -4,7 +4,7 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc.Parts;
 
-public class SubPartScaledProportionalToStat : IGameCalculationPart
+public class SubPartScaledProportionalToStat : IGameCalculationPart, IGameCalculationPartWithStats
 {
     private IGameCalculationPart? Part;
     private StatType Stat;
@@ -28,4 +28,5 @@ public class SubPartScaledProportionalToStat : IGameCalculationPart
     }
 
     public CalculationPartType Type() => CalculationPartType.SubPartScaledProportionalToStat;
+    public (StatType, StatFormulaType) GetStat() => (Stat, StatFormula);
 }

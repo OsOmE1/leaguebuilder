@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using LeagueBuilder.Calc.Parts;
 using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc;
@@ -44,6 +45,18 @@ public class GameCalculationModified : IGameCalculation
         OverrideSpellLevel = -1;
         if (element.TryGetProperty("mOverrideSpellLevel", out JsonElement level))
             OverrideSpellLevel = level.GetInt32();
+    }
+
+    public IEnumerable<(StatType, StatFormulaType)> GetStatTypes()
+    {
+        var stats = ModifiedGameCalculation.GetStatTypes();
+        if (Multiplier?.Type() is CalculationPartType.StatByCoefficientCalculationPart
+            or CalculationPartType.StatBySubPartCalculationPart
+            or CalculationPartType.SubPartScaledProportionalToStat
+            or CalculationPartType.StatByNamedDataValueCalculationPart)
+            stats = stats.Append(((IGameCalculationPartWithStats)Multiplier).GetStat());
+
+        return stats;
     }
 
     public CalculationType Type() => CalculationType.GameCalculationModifiedType;

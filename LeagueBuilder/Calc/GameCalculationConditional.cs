@@ -52,8 +52,9 @@ public class GameCalculationConditional : IGameCalculation
             gc.FromJson(name, cal1, context);
             ConditionalGameCalculation = gc;
         }
-
     }
+
+    public IEnumerable<(StatType, StatFormulaType)> GetStatTypes() => DefaultGameCalculation.GetStatTypes();
 
     public CalculationType Type() => CalculationType.GameCalculationConditional;
 }

@@ -43,6 +43,37 @@ public static class Utils
         if (doc.RootElement.TryGetProperty($"{{{BinHash(key)}}}", out val)) return val;
         return null;
     }
+
+    public static string StatToStringLong(StatType stat, StatFormulaType formulaType)
+    {
+        if (stat == StatType.AbilityPower) formulaType = StatFormulaType.Total;
+        return $"{formulaType}{stat}";
+    }
+
+    public static string StatToStringShort(StatType stat, StatFormulaType formulaType)
+    {
+        string f = formulaType switch
+        {
+            StatFormulaType.Total => "t",
+            StatFormulaType.Bonus => "b",
+            _ => "",
+        };
+        string s = stat switch
+        {
+            StatType.AbilityPower => "AP",
+            StatType.Attack => "AD",
+            StatType.AttackSpeed => "AS",
+            StatType.MagicResist => "MR",
+            StatType.MoveSpeed => "MS",
+            StatType.CooldownReduction => "CDR",
+            StatType.AbilityHaste => "AH",
+            StatType.MaxHealth => "HP",
+            StatType.AttackRange => "AR",
+            _ => stat.ToString()
+        };
+        return $"{f}{s}";
+    }
+
     public static CalculationType CalculationTypeFromString(string s) => s switch
         {
             "IGameCalculation" => CalculationType.IGameCalculationType,

@@ -147,6 +147,18 @@ public class Spell
     public string ResolveSpellText(ChampionInstance champion, int rank, SpellResolveMode mode) =>
         ResolveSpellText(Tooltip, champion, rank, mode);
 
+    public IEnumerable<string> GetDamageTypes() =>
+        Regex.Matches(Tooltip, @"<(\w+)>").Select(m => m.Groups[1].Value).Where(r => _dmgMap.ContainsKey(r)).Distinct();
+
+    public IEnumerable<(StatType,StatFormulaType)> GetScalingStats() => GetDamageTypes()
+        .SelectMany(t => Regex.Matches(Tooltip, $@"<{t}>(.*?)<\/{t}>"))
+        .Select(m => m.Groups[1].Value)
+        .SelectMany(s => Regex.Matches(s, @"@(.+?)(?:\*([-\.0-9]+)%*|\.\d|)@"))
+        .Select(m => SpellCalculations.FirstOrDefault(s => Utils.MatchesBinEntry(m.Groups[1].Value, s.Name())))
+        .Where(gc => gc != null)
+        .SelectMany(gc => gc.GetStatTypes())
+        .Distinct();
+
     private string? GetValue(string key, ChampionInstance champion, int rank, SpellResolveMode mode)
     {
         CalculationContext context = champion.GetCalculationContext(GetInstance(rank), champion.Champ.Resolver);
@@ -289,7 +301,7 @@ public class Spell
         }
         tt = tt.Replace(".0*", "*");
 
-        MatchCollection matches = Regex.Matches(tt, $@"@(.+?)(?:\*([-\.0-9]+)%*|\.\d|)@");
+        MatchCollection matches = Regex.Matches(tt, @"@(.+?)(?:\*([-\.0-9]+)%*|\.\d|)@");
         foreach (Match match in matches)
         {
             string? newValue = GetValue(match.Groups[1].Value, champion, rank, mode);

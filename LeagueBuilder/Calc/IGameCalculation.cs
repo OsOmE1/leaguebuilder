@@ -9,5 +9,6 @@ public interface IGameCalculation
     public double Value(CalculationContext context);
     public string String(CalculationContext context);
     public void FromJson(string name, JsonElement element, ParseContext context);
+    public IEnumerable<(StatType,StatFormulaType)> GetStatTypes();
     public CalculationType Type();
 }

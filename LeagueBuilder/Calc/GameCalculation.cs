@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using LeagueBuilder.Calc.Parts;
 using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc;
@@ -60,6 +61,15 @@ public class GameCalculation : IGameCalculation
         if (element.TryGetProperty("mPrecision", out JsonElement percent))
             Precision = percent.GetInt32();
     }
+
+    public IEnumerable<(StatType, StatFormulaType)> GetStatTypes() =>
+        FormulaParts
+            .Where(p => p.Type() is CalculationPartType.StatByCoefficientCalculationPart
+                or CalculationPartType.StatBySubPartCalculationPart
+                or CalculationPartType.SubPartScaledProportionalToStat
+                or CalculationPartType.StatByNamedDataValueCalculationPart)
+            .Select(p => ((IGameCalculationPartWithStats)p).GetStat());
+
 
     public CalculationType Type() => CalculationType.GameCalculationType;
 }

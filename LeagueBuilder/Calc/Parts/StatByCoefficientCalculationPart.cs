@@ -3,7 +3,7 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc.Parts;
 
-public class StatByCoefficientCalculationPart : IGameCalculationPart
+public class StatByCoefficientCalculationPart : IGameCalculationPart, IGameCalculationPartWithStats
 {
     private double Coefficient;
     private StatType Stat;
@@ -33,6 +33,6 @@ public class StatByCoefficientCalculationPart : IGameCalculationPart
         if (element.TryGetProperty("mStatFormula", out JsonElement form))
             StatFormula = (StatFormulaType)form.GetInt32();
     }
-
+    public (StatType, StatFormulaType) GetStat() => (Stat, StatFormula); // TODO: implement abstract class for stats
     public CalculationPartType Type() => CalculationPartType.StatByCoefficientCalculationPart;
 }

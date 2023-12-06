@@ -4,7 +4,7 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Calc.Parts;
 
-public class StatBySubPartCalculationPart  : IGameCalculationPart
+public class StatBySubPartCalculationPart  : IGameCalculationPart, IGameCalculationPartWithStats
 {
     private IGameCalculationPart Part;
     private StatType Stat;
@@ -28,6 +28,6 @@ public class StatBySubPartCalculationPart  : IGameCalculationPart
         if (element.TryGetProperty("mSubpart", out JsonElement part))
             Part = GameCalculationPart.PartFromJson(part, context)!;
     }
-
+    public (StatType, StatFormulaType) GetStat() => (Stat, StatFormula);
     public CalculationPartType Type() => CalculationPartType.StatBySubPartCalculationPart;
 }
