@@ -95,7 +95,7 @@ public class Spell
         DelayTotalTimePercent = spell.MSpell.DelayTotalTimePercent;
         CastRange = spell.MSpell.CastRange;
         CastRadius = spell.MSpell.CastRadius;
-        string? tt = stringResolver.Get(spell.MSpell.MClientData?.MTooltipData?.MLocKeys?.KeyTooltip?.ToLower() ?? string.Empty);
+        string? tt = stringResolver.Get(spell.MSpell.MClientData?.MTooltipData?.MLocKeys?.KeyTooltip ?? string.Empty);
         Tooltip = tt ?? "";//throw new Exception("no tooltip found");
 
         DamageTypes = new List<DamageType>();
@@ -332,6 +332,7 @@ public class Spell
         tt = r.Replace(tt, "");
 
         tt = tt.Replace("<br><br>", "\n");
+        tt = tt.Replace("<br>", " ");
 
         return RemoveToolTipSectionWithTag(tt, "rules", false);
     }

@@ -18,14 +18,23 @@ public static class Utils
         return hash.Length == 8 ? hash : '0' + hash;
     }
 
-    public static string Xxh64(string s)
+    public static string StringTableHash(string s) => Xxh64Trunc(s.ToLower());
+
+    public static string Xxh64Trunc(string s)
     {
         var hash = new XxHash64();
-        hash.Append(Encoding.ASCII.GetBytes(s.ToLower()));
+        hash.Append(Encoding.ASCII.GetBytes(s));
         ulong h = hash.GetCurrentHashAsUInt64();
         h &= ((ulong)1 << 40) - 1;
 
         return $"{h:x}";
+    }
+
+    public static string Xxh64(string s)
+    {
+        var hash = new XxHash64();
+        hash.Append(Encoding.ASCII.GetBytes(s));
+        return $"{hash.GetCurrentHashAsUInt64():x}";
     }
 
     public static JsonElement? GetBinValue(string key, JsonDocument doc)

@@ -9,12 +9,14 @@ public class DataDragon
 {
     private const string Base = "https://raw.communitydragon.org/";
     private readonly StringResolver _sr;
+    private readonly Config _config;
     private readonly List<Item> _items;
     private readonly string _url;
     private readonly HttpClient _client;
 
     public DataDragon(Config config)
     {
+        _config = config;
         _url = Base + config.Patch + "/";
         _client = new HttpClient();
         var res = Get<JsonDocument>($"game/data/menu/main_{config.Locale}.stringtable.json");
@@ -48,9 +50,31 @@ public class DataDragon
         req.RequestUri = new Uri(_url + path);
 
         HttpResponseMessage resp = _client.Send(req);
-        Stream body = resp.Content.ReadAsStream();
 
+        Stream body = resp.Content.ReadAsStream();
         return JsonSerializer.Deserialize<T>(body);
+    }
+
+    private JsonDocument? GetChampionBin(string champion)
+    {
+        using var req = new HttpRequestMessage();
+        req.Method = HttpMethod.Get;
+        req.RequestUri = new Uri(_url + $"game/data/characters/{champion.ToLower()}/{champion.ToLower()}.bin.json");
+
+        HttpResponseMessage resp = _client.Send(req);
+
+        TextReader reader = new StreamReader(resp.Content.ReadAsStream());
+        if (!_config.BinReplacements.TryGetValue(champion, out var replacements))
+        {
+            Stream body = resp.Content.ReadAsStream();
+            return JsonSerializer.Deserialize<JsonDocument>(body);
+        }
+        string text = reader.ReadToEnd();
+        foreach ((string o, string n) in replacements)
+            text = text.Replace(o, n);
+
+
+        return JsonSerializer.Deserialize<JsonDocument>(text);
     }
 
     public IEnumerable<string> GetChampionNames()
@@ -73,7 +97,7 @@ public class DataDragon
 
     public Champion GetChampion(string name)
     {
-        var res = Get<JsonDocument>($"game/data/characters/{name.ToLower()}/{name.ToLower()}.bin.json");
+        var res = GetChampionBin(name);
         if (res == null) throw new Exception("could not load champion file");
 
         ApiChampion apiChampion = new();

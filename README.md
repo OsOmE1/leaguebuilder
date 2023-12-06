@@ -38,7 +38,7 @@ var spell = champion.GetAltSpell("ApheliosCalibrumQ");
 // you can also retrive items like this
 var bork = data.GetItem(3153); // get item by id
 var ie = data.GetItem("Infinity Edge"); // or name
-var runaans = data.GetItem(i => 3085); // or by predicate
+var runaans = data.GetItem(i => i.Id == 3085); // or by predicate
 var dorans = data.GetItems(i => i.Title.Contains("Dorans"); // or multiple by predicate
     
 // you can add the items to the champion instance as follows

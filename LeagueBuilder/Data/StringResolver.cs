@@ -19,7 +19,7 @@ public class StringResolver
         if (key == "") return null;
         if (_entries.TryGetValue(key, out string? val)) return val;
         if (_entries.TryGetValue(key.ToLower(), out val)) return val;
-        if (_entries.TryGetValue($"{{{Utils.Xxh64(key)}}}", out val)) return val;
+        if (_entries.TryGetValue($"{{{Utils.StringTableHash(key)}}}", out val)) return val;
 
         return _binmap.TryGetValue(key, out val) ? val : null;
     }
