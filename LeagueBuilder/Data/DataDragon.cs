@@ -34,7 +34,7 @@ public class DataDragon
             _sr.AddSpellReplacement(spell.Key, spellReplacement.Key, spellReplacement.Value);
 
         _items = new List<Item>();
-        res = Get<JsonDocument>($"game/items.cdtb.bin.json");
+        res = Get<JsonDocument>("game/items.cdtb.bin.json");
         _items = res?.RootElement.EnumerateObject()
             .Where(p => Regex.IsMatch(p.Name, @"^Items/\d+$"))
             .Select(p => p.Value.Deserialize<ApiItem>())

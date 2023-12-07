@@ -4,7 +4,7 @@ LeagueBuilder is a C# library that can interact with the community dragon CDN to
 . It can then parse this data and process calculation given various variables.
 
 ## Roadmap
-* Add Runes!
+* Fully implement runes (shard have been added)
 * Fix small issues in tooltip resolving
 * A lot of code cleanup
 
@@ -48,6 +48,13 @@ instance.Items.Add(ie);
 // or
 instance.Items.AddRange([bork, runaans, ie]);
 instance.Items.AddRange(dorans);
+
+// you can also add rune shards like this 
+// note: it is not checked whether the shard type is valid for the slot
+instance.SetStatMod(StatModSlot.Offense, ShardType.AttackSpeed);
+instance.SetStatMod(StatModSlot.Flex, ShardType.Adaptive);
+instance.SetStatMod(StatModSlot.Defense, ShardType.Armor);
+
 ```
 Also see example in `LeagueBuilder.Example/Program.cs`
 

@@ -6,6 +6,12 @@ namespace LeagueBuilder;
 public class ChampionInstance
 {
     public Champion Champ;
+
+    // shards
+    public ShardType Offense;
+    public ShardType Flex;
+    public ShardType Defense;
+
     public Stats BaseStats;
     public Dictionary<StatType, double> PerLevel;
     public readonly List<Item> Items;
@@ -57,6 +63,24 @@ public class ChampionInstance
 
     }
 
+    public void SetStatMod(StatModSlot slot, ShardType type)
+    {
+        switch (slot)
+        {
+            case StatModSlot.Offense:
+                Offense = type;
+                break;
+            case StatModSlot.Flex:
+                Flex = type;
+                break;
+            case StatModSlot.Defense:
+                Defense = type;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(slot), slot, null);
+        }
+    }
+
     public double GetResourceAmount(StatFormulaType type)
     {
         double baseValue = Champ.BaseAbilityResource;
@@ -93,7 +117,9 @@ public class ChampionInstance
         return GetStat(stat, type);
     }
 
-    public double GetStat(StatType stat, StatFormulaType type)
+    public double GetStat(StatType stat, StatFormulaType type) => GetStat(stat, type, true);
+
+    private double GetStat(StatType stat, StatFormulaType type, bool shardCalculation)
     {
         double baseValue = BaseStats.Values[stat];
 
@@ -106,7 +132,9 @@ public class ChampionInstance
                 bonusRatio *= it.GetStatRatio(stat);
             else bonusRatio += it.GetStatRatio(stat);
         }
-        foreach (object p in Perks) continue; // TODO: implement runes
+
+        if (shardCalculation)
+            bonusValue += GetShardValue(stat);
 
         bonusValue += bonusRatio * baseValue; // Percent bonuses stack additively - credit: yariet :)
 
@@ -127,6 +155,42 @@ public class ChampionInstance
             StatFormulaType.Total => baseValue + bonusValue + growth,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
+    }
+
+    private double GetShardValue(StatType stat)
+    {
+        switch (stat) // this is very ugly but I don't feel like cleaning it up
+        {
+            case StatType.Attack or StatType.AbilityPower:
+            {
+                double adaptive = (Offense == ShardType.Adaptive ? 9 : 0) + (Flex == ShardType.Adaptive ? 9 : 0);
+                double ad = GetStat(StatType.Attack, StatFormulaType.Bonus, false);
+                double ap = GetStat(StatType.AbilityPower, StatFormulaType.Total, false);
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (stat)
+                {
+                    case StatType.Attack when ad > ap:
+                        return adaptive * 0.6;
+                    case StatType.AbilityPower when ap > ad:
+                        return adaptive;
+                }
+
+                break;
+            }
+            case StatType.AttackSpeed:
+                return Offense == ShardType.AttackSpeed ? 0.1 : 0;
+            case StatType.AbilityHaste:
+                return Offense == ShardType.AbilityHaste ? 8 : 0;
+                break;
+            case StatType.Armor:
+                return (Flex == ShardType.Armor ? 6 : 0) + (Defense == ShardType.Armor ? 6 : 0);
+            case StatType.MagicResist:
+                return (Flex == ShardType.MagicResist ? 6 : 0) + (Defense == ShardType.MagicResist ? 6 : 0);
+            case StatType.MaxHealth:
+                return Defense == ShardType.Armor ? 15 + 125 * ((double)Level / 18F) : 0;
+        }
+
+        return 0;
     }
 
     public CalculationContext GetCalculationContext(SpellInstance instance, StringResolver fc) => new()
