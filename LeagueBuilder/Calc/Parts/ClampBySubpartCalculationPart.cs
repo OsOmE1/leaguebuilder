@@ -16,11 +16,11 @@ public class ClampBySubpartCalculationPart : IGameCalculationPart
 
     public void FromJson(JsonElement element, ParseContext context)
     {
-        if (element.TryGetProperty("mCeiling", out JsonElement ceil))
+        if (element.TryGetProperty("mCeiling", out JsonElement ceil) && ceil.ValueKind != JsonValueKind.Null)
             _ceiling = ceil.GetDouble();
-        if (element.TryGetProperty("mFloor", out JsonElement floor))
+        if (element.TryGetProperty("mFloor", out JsonElement floor) && floor.ValueKind != JsonValueKind.Null)
             _floor = floor.GetDouble();
-        if (element.TryGetProperty("mSubpart", out JsonElement subPart))
+        if (element.TryGetProperty("mSubpart", out JsonElement subPart) && subPart.ValueKind != JsonValueKind.Null)
         {
             if (element.TryGetProperty("__type", out JsonElement t) &&
                 GameCalculationPart.FormulaPartTypeFromString(t.GetString() ?? string.Empty) != CalculationPartType.UnknownPart)

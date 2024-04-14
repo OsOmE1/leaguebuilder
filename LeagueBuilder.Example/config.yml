@@ -68,6 +68,8 @@ spell_replacements:
     f2.0: "@TotalAttackSpeed@"
   SyndraW:
     f2: "@SlowDuration@"
+  SwainPassive:
+    f2: "(Soul Fragments collected * @HealthIncrement@)"
 bin_replacements:
   Hwei:
     "{40afb24e}": "Characters/Hwei/Spells/HweiQAbility/HweiQQ"

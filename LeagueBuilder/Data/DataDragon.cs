@@ -1,6 +1,5 @@
 ﻿using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Data;
@@ -18,12 +17,15 @@ public class DataDragon
     {
         _config = config;
         _url = Base + config.Patch + "/";
+        var version = new Version(config.Patch);
+
         _client = new HttpClient();
-        var res = Get<JsonDocument>($"game/data/menu/main_{config.Locale}.stringtable.json");
+        var res = Get<JsonDocument>(version.GetStringTableUrl(config.Locale));
         if (res == null) throw new Exception("could not load fontconfig");
 
         var fc = res.RootElement.GetProperty("entries").Deserialize<Dictionary<string, string>>();
         if (fc == null) throw new Exception("could not cast fontconfig");
+
         _sr = new StringResolver(fc!);
         foreach (var keyReplacement in config.KeyReplacements)
             _sr.ReplaceKey(keyReplacement.Key,keyReplacement.Value);
@@ -34,7 +36,7 @@ public class DataDragon
             _sr.AddSpellReplacement(spell.Key, spellReplacement.Key, spellReplacement.Value);
 
         _items = new List<Item>();
-        res = Get<JsonDocument>("game/items.cdtb.bin.json");
+        res = Get<JsonDocument>(version.GetItemsUrl());
         _items = res?.RootElement.EnumerateObject()
             .Where(p => Regex.IsMatch(p.Name, @"^Items/\d+$"))
             .Select(p => p.Value.Deserialize<ApiItem>())

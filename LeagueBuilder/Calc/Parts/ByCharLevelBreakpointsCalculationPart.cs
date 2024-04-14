@@ -8,7 +8,7 @@ public class ByCharLevelBreakpointsCalculationPart  : IGameCalculationPart
 {
     private double BaseValue;
     private double Scale;
-    private Dictionary<int, double> BreakPoints;
+    private Dictionary<int, double>? BreakPoints;
 
     public double GetValue(CalculationContext context)
     {
@@ -16,7 +16,7 @@ public class ByCharLevelBreakpointsCalculationPart  : IGameCalculationPart
         double perLevel = Scale;
         for (var i = 1; i < context.Champion.Level; i++)
         {
-            if (BreakPoints.TryGetValue(i + 1, out double n)) perLevel = n;
+            if (BreakPoints?.TryGetValue(i + 1, out double n) ?? false) perLevel = n;
             val += perLevel;
         }
 
@@ -50,6 +50,11 @@ public class ByCharLevelBreakpointsCalculationPart  : IGameCalculationPart
             }
             if (v.Value.ValueKind == JsonValueKind.Undefined) break;
             BreakPoints[lvl.GetInt32()] = b.GetProperty(v.Name).GetDouble();
+        }
+
+        if (BreakPoints == null)
+        {
+            return;
         }
     }
 
