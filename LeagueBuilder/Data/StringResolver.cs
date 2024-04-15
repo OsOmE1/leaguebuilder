@@ -2,15 +2,15 @@
 
 public class StringResolver
 {
-    private readonly Dictionary<string, string> _binmap;
+    private readonly Dictionary<string, string> _binMap;
     private readonly Dictionary<string, string?> _entries;
     private readonly Dictionary<string, Dictionary<string, string>> _spellReplacements;
 
 
-    internal StringResolver(Dictionary<string, string> entries)
+    internal StringResolver(Dictionary<string, string?> entries)
     {
         _entries = entries;
-        _binmap = new Dictionary<string, string>();
+        _binMap = new Dictionary<string, string>();
         _spellReplacements = new Dictionary<string, Dictionary<string, string>>();
     }
 
@@ -21,7 +21,7 @@ public class StringResolver
         if (_entries.TryGetValue(key.ToLower(), out val)) return val;
         if (_entries.TryGetValue($"{{{Utils.StringTableHash(key)}}}", out val)) return val;
 
-        return _binmap.TryGetValue(key, out val) ? val : null;
+        return _binMap.TryGetValue(key, out val) ? val : null;
     }
 
     public string? GetSpellReplacement(string spell, string key) =>
@@ -33,7 +33,7 @@ public class StringResolver
         _spellReplacements[spell][key] = value;
     }
 
-    public void AddBinMapEntry(string key, string value) => _binmap[key] = value;
+    public void AddBinMapEntry(string key, string value) => _binMap[key] = value;
 
     public void LinkKey(string oldKey, string newKey)
     {

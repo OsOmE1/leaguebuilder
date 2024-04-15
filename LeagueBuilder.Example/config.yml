@@ -1,5 +1,6 @@
 ﻿patch: latest
 locale: en_us
+cache: true
 key_replacements:
   "{15dd1b3843}": Spell_GangplankQWrapper_Tooltip_1
   "{13cc673c9b}": Spell_AkshanW_Tooltip_1

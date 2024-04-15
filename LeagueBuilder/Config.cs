@@ -7,11 +7,11 @@ public class Config
 {
     public string Patch { get; set; }
     public string Locale { get; set; }
+    public bool Cache { get; set; }
     public Dictionary<string, string> KeyReplacements;
     public Dictionary<string, string> KeyLinks;
     public Dictionary<string, Dictionary<string,string>> SpellReplacements;
     public Dictionary<string, Dictionary<string, string>> BinReplacements;
-
 
     public static Config FromFile(string path)
     {

@@ -4,11 +4,12 @@ using LeagueBuilder.Data.Models;
 
 namespace LeagueBuilder.Data;
 
-public class DataDragon
+public partial class DataDragon
 {
     private const string Base = "https://raw.communitydragon.org/";
     private readonly StringResolver _sr;
     private readonly Config _config;
+    private readonly CacheManager _cache;
     private readonly List<Item> _items;
     private readonly string _url;
     private readonly HttpClient _client;
@@ -16,6 +17,8 @@ public class DataDragon
     public DataDragon(Config config)
     {
         _config = config;
+        _cache = new CacheManager(config);
+
         _url = Base + config.Patch + "/";
         var version = new Version(config.Patch);
 
@@ -38,15 +41,23 @@ public class DataDragon
         _items = new List<Item>();
         res = Get<JsonDocument>(version.GetItemsUrl());
         _items = res?.RootElement.EnumerateObject()
-            .Where(p => Regex.IsMatch(p.Name, @"^Items/\d+$"))
+            .Where(p => ItemRegex().IsMatch(p.Name))
             .Select(p => p.Value.Deserialize<ApiItem>())
             .Where(i => i != null)
             .Select(i => new Item(i!, _sr))
             .ToList() ?? [];
     }
 
-    public T? Get<T>(string path)
+    private T? Get<T>(string path)
     {
+        if (_config.Cache && _cache.TryGetCachedFileStream(path, out Stream fs))
+        {
+            var cachedResult = JsonSerializer.Deserialize<T>(fs);
+            fs.Close();
+
+            return cachedResult;
+        }
+
         using var req = new HttpRequestMessage();
         req.Method = HttpMethod.Get;
         req.RequestUri = new Uri(_url + path);
@@ -54,7 +65,12 @@ public class DataDragon
         HttpResponseMessage resp = _client.Send(req);
 
         Stream body = resp.Content.ReadAsStream();
-        return JsonSerializer.Deserialize<T>(body);
+        if (_config.Cache)
+            _cache.CacheFile(path, body);
+        var result = JsonSerializer.Deserialize<T>(body);
+        body.Close();
+
+        return result;
     }
 
     private JsonDocument? GetChampionBin(string champion)
@@ -99,7 +115,7 @@ public class DataDragon
 
     public Champion GetChampion(string name)
     {
-        var res = GetChampionBin(name);
+        JsonDocument? res = GetChampionBin(name);
         if (res == null) throw new Exception("could not load champion file");
 
         ApiChampion apiChampion = new();
@@ -138,7 +154,7 @@ public class DataDragon
         foreach (JsonProperty prop in res.RootElement.EnumerateObject())
         {
             if (!Regex.IsMatch(prop.Name, $"^Characters/{name}/Spells/.+$")) continue;
-            var spellName = prop.Name.Split("/").Last();
+            string spellName = prop.Name.Split("/").Last();
 
             // have already processed the spell as a main spell
             if (apiChampion.Spells.Any(s => s.MScriptName == spellName)) continue;
@@ -172,4 +188,7 @@ public class DataDragon
 
         return new Champion(apiChampion, _sr);
     }
+
+    [GeneratedRegex(@"^Items/\d+$")]
+    private static partial Regex ItemRegex();
 }

@@ -15,7 +15,7 @@ public partial class Version
     private string _buildMetadata;
 
     // https://semver.org/; semver regex
-    [GeneratedRegex("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$")]
+    [GeneratedRegex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$")]
     private static partial Regex SemverRegex();
 
     public Version(string version)
@@ -67,11 +67,8 @@ public partial class Version
         return $"game/data/menu/fontconfig_{locale}.txt.json";
     }
 
-    public string GetItemsUrl()
-    {
-        if (After(LastFontConfigVersion)) return "game/items.cdtb.bin.json";
-        return $"game/global/items/items.bin.json";
-    }
+    public string GetItemsUrl() =>
+        After(LastFontConfigVersion) ? "game/items.cdtb.bin.json" : $"game/global/items/items.bin.json";
 
     private bool After(Version other)
     {

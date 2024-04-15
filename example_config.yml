@@ -1,11 +1,12 @@
 ﻿patch: latest
 locale: en_us
+cache: true
 key_replacements:
   "{15dd1b3843}": Spell_GangplankQWrapper_Tooltip_1
   "{13cc673c9b}": Spell_AkshanW_Tooltip_1
   "{2497454aec}": Spell_OrnnP_Tooltip_1
   "{4998f9a12d}": Spell_SecondSight_Tooltip_1
-  # idk what they did to hwei, but my stringtable lookup doesn't like it
+  # IDK what they did to hwei, but my stringtable lookup doesn't like it
   "{1d5e6fafb2}": Spell_HweiW_Name
   "{4af8444a14}": Spell_HweiE_Name
   "{2cadf90cce}": Spell_HweiPassive_Name
@@ -69,9 +70,11 @@ spell_replacements:
     f2.0: "@TotalAttackSpeed@"
   SyndraW:
     f2: "@SlowDuration@"
+  SwainPassive:
+    f2: "(Soul Fragments collected * @HealthIncrement@)"
 bin_replacements:
   Hwei:
-    # i think this has to do with CDTB but im not sure
+    # I think this has to do with CDTB but im not sure
     "{40afb24e}": "Characters/Hwei/Spells/HweiQAbility/HweiQQ"
     "{42afb574}": "Characters/Hwei/Spells/HweiQAbility/HweiQW"
     "{34af9f6a}": "Characters/Hwei/Spells/HweiQAbility/HweiQE"
